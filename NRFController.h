@@ -69,6 +69,11 @@ class NRFController {
         NRF2Mbps
     };
 
+    enum NRFMode {
+        NRFTxMode,
+        NRFRxMode
+    };
+
     NRFController(const char* dev);
     ~NRFController();
 
@@ -86,6 +91,7 @@ class NRFController {
     bool sendPkg(const char* data);
     int bytesAvailable();
     bool setPowerUp(bool powerUp);
+    bool setMode(NRFMode mode);
     private:
     bool readRegister(uint8_t regNumber, uint8_t regBuffer[], int size = 1);
     bool writeRegister(uint8_t regNumber, const uint8_t regValue[], int size = 1);

@@ -411,3 +411,35 @@ bool NRFController::setPowerUp(bool powerUp) {
     return true;
 }
 
+/**
+* @brief 
+*
+* @param mode
+*
+* @return 
+*/
+bool NRFController::setMode(NRFMode mode) {
+    uint8_t regConfig;
+
+    //retrieve current config
+    readRegister(NRF_REG_CONFIG, &regConfig);
+
+    switch (mode) {
+        case NRFTxMode:
+            regConfig = regConfig & ~0x01;
+            break;
+
+        case NRFRxMode:
+            regConfig = regConfig | 0x01;
+            break;
+
+        default:
+            return false;
+    }
+    
+    //update config register
+    writeRegister(NRF_REG_CONFIG, &regConfig);
+
+    return true;
+}
+
