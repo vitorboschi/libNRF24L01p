@@ -215,11 +215,31 @@ bool NRFController::setRetries(int retries) {
 * @brief Enable or disable auto ack feature
 *
 * @param autoAck true to enable, false to disable
+* @param pipe which pipe to configure
 *
 * @return true for success, false otherwise
 */
-bool setAutoAck(bool autoAck) {
-    return false;
+bool NRFController::setAutoAck(bool autoAck, uint8_t pipe) {
+    uint8_t regEnAA;
+
+    //validate input
+    if (pipe > 5) {
+        return false;
+    }
+    
+    //read current value
+    readRegister(NRF_REG_EN_AA, &regEnAA);
+
+    if (autoAck) {
+        regEnAA = regEnAA | (1 << pipe);
+    }
+    else {
+        regEnAA = regEnAA & ~(1 << pipe);
+    }
+
+    //update register
+    writeRegister(NRF_REG_EN_AA, &regEnAA);
+    return true;
 }
 
 /**
@@ -304,13 +324,17 @@ bool NRFController::setRxAddress(const uint8_t* address, uint8_t n, uint8_t pipe
 * @return true for successm false otherwise
 */
 bool NRFController::setChannel(int channel) {
+    uint8_t regRfCh;
+
     //valide input
     if (channel < 0 || channel > NRF_MAX_CHANNEL) {
         return false;
     }
 
+    regRfCh = channel & 0x7F;
+
     //update register
-    writeRegister(NRF_REG_RF_CH, channel);
+    writeRegister(NRF_REG_RF_CH, &regRfCh);
     return true;
 }
 

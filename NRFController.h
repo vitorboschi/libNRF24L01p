@@ -76,7 +76,7 @@ class NRFController {
     bool setCRC(int size);
     bool setDataRate(NRFDataRate rate);
     bool setRetries(int retries);
-    bool setAutoAck(bool autoAck);
+    bool setAutoAck(bool autoAck, uint8_t pipe = 0);
     bool setAddressWidth(int width);
     uint8_t addressWidth();
     bool setRxAddress(const uint8_t* address, uint8_t n, uint8_t pipe = 0);
