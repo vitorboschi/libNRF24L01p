@@ -304,10 +304,13 @@ bool NRFController::setRxAddress(const uint8_t* address, uint8_t n, uint8_t pipe
 * @return true for successm false otherwise
 */
 bool NRFController::setChannel(int channel) {
+    //valide input
     if (channel < 0 || channel > NRF_MAX_CHANNEL) {
         return false;
     }
 
+    //update register
+    writeRegister(NRF_REG_RF_CH, channel);
     return true;
 }
 
