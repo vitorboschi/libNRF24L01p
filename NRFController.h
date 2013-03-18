@@ -85,6 +85,7 @@ class NRFController {
     int writeData(int size, const char* buffer);
     bool sendPkg(const char* data);
     int bytesAvailable();
+    bool setPowerUp(bool powerUp);
     private:
     bool readRegister(uint8_t regNumber, uint8_t regBuffer[], int size = 1);
     bool writeRegister(uint8_t regNumber, const uint8_t regValue[], int size = 1);

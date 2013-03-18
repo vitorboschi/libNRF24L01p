@@ -386,3 +386,28 @@ int NRFController::bytesAvailable() {
     return 0;
 }
 
+/**
+* @brief Activate ou deactivate de module power
+* Module must be activated before transmiting or receiving anything
+*
+* @param powerUp true to enable power, false to disable
+*
+* @return true for success, false otherwise
+*/
+bool NRFController::setPowerUp(bool powerUp) {
+    uint8_t regConfig;
+
+    readRegister(NRF_REG_CONFIG, &regConfig);
+
+    if (powerUp) {
+        regConfig = regConfig | 0x02;
+    }
+    else {
+        regConfig = regConfig & ~0x02;
+    }
+    
+    writeRegister(NRF_REG_CONFIG, &regConfig);
+
+    return true;
+}
+
