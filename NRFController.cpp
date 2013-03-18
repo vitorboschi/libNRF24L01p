@@ -189,10 +189,26 @@ bool NRFController::setDataRate(NRFDataRate rate) {
 * @param retries how many retries. Valid values are from 0 to 15
 *
 * @return true for success, false otherwise
-* @todo implement the method
 */
-bool setRetries(int retries) {
-    return false;
+bool NRFController::setRetries(int retries) {
+    uint8_t regSetupRetR;
+    
+    //validate input
+    if (retries < 0 || retries > 15) {
+        return false;
+    }
+
+    //get current register value
+    readRegister(NRF_REG_SETUP_RETR, &regSetupRetR);
+
+    //clear ARC field (bits 3:0)
+    regSetupRetR = regSetupRetR & (~0x0F);
+    //set retries count
+    regSetupRetR |= retries;
+
+    //update register
+    writeRegister(NRF_REG_SETUP_RETR, &regSetupRetR);
+    return true;
 }
 
 /**
