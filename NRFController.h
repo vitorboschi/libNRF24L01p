@@ -73,7 +73,7 @@ class NRFController {
     ~NRFController();
 
     bool setPacketSize(uint8_t numBytes, uint8_t pipe = 0);
-    bool setSetCRC(int size);
+    bool setCRC(int size);
     bool setDataRate(NRFDataRate rate);
     bool setRetries(int retries);
     bool setAutoAck(bool autoAck);

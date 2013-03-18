@@ -133,7 +133,7 @@ bool NRFController::setPacketSize(uint8_t packetSize, uint8_t pipe) {
 *
 * @return true for success, false otherwise
 */
-bool NRFController::setSetCRC(int crcBytes) {
+bool NRFController::setCRC(int crcBytes) {
     uint8_t regConfig;
 
     readRegister(NRF_REG_CONFIG, &regConfig);
