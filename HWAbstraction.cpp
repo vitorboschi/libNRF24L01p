@@ -37,6 +37,13 @@ HWAbstraction::~HWAbstraction() {
     }
 }
 
+/**
+* @brief prepares SPI and GPIO access (to control CE pin)
+* this method must be executed succefully before calling any other method in
+* this class.
+*
+* @return 
+*/
 int HWAbstraction::openDevice() {
     uint8_t mode = 0;
     uint8_t bits = 8;
@@ -55,19 +62,45 @@ int HWAbstraction::openDevice() {
     return 0;
 }
 
+/**
+* @brief Releases devices used for SPI and GPIO access. No method may be called
+* after a call to this method, except openDevice()
+*/
 void HWAbstraction::closeDevice() {
     close(m_fd);
     m_fd = -1;
 }
 
+/**
+* @brief Put CE pin in logic state 1
+*
+* @return true for success, false otherwise
+*/
 bool HWAbstraction::setCE() {
 
 }
 
+
+/**
+* @brief Put CE pin in logic state 0
+*
+* @return true for success, false otherwise
+*/
 bool HWAbstraction::clearCE() {
 
 }
 
+/**
+* @brief Send and receive bytes over SPI interface
+* The method will block until de end of transaction. tx and rx buffers must
+* be allocated prior to calling this method
+*
+* @param tx array of size n containing data to be transmitted
+* @param rx array of size n that will be filled with bytes received
+* @param n size of tx and rx buffers
+*
+* @return true for success, false otherwise
+*/
 bool HWAbstraction::transact(const uint8_t* tx, uint8_t* rx, int n) {
     int ret;
 
