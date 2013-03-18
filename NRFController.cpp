@@ -299,7 +299,7 @@ bool NRFController::setRxAddress(const uint8_t* address, uint8_t n, uint8_t pipe
 /**
 * @brief Configure the RF channel to be used by NRF24L01+ module
 *
-* @param channel channel number, from 0 to 127. Check which address 
+* @param channel channel number, from 0 to 127. Check which address you're allowed to use in your country
 *
 * @return true for successm false otherwise
 */
