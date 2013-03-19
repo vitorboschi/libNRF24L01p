@@ -34,9 +34,12 @@ class HWAbstraction {
     bool transact(const uint8_t* tx, uint8_t* rx, int n);
 
     private:
+    bool setupIO();
     int m_fd;
     uint16_t m_delay;
     std::string m_spiDevice;
+    void *m_gpioMap;
+    volatile unsigned int *m_gpio;
 };
 
 #endif

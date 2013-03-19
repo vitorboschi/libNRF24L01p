@@ -25,6 +25,20 @@
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
+#include <sys/mman.h>
+
+#define BCM2708_PERI_BASE        0x20000000
+#define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
+
+#define PAGE_SIZE (4*1024)
+#define BLOCK_SIZE (4*1024)
+// GPIO setup macros. Always use INP_GPIO(x) before using OUT_GPIO(x) or SET_GPIO_ALT(x,y)
+#define INP_GPIO(g) *(m_gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
+#define OUT_GPIO(g) *(m_gpio+((g)/10)) |=  (1<<(((g)%10)*3))
+#define SET_GPIO_ALT(g,a) *(m_gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
+
+#define GPIO_SET *(m_gpio+7)  // sets   bits which are 1 ignores bits which are 0
+#define GPIO_CLR *(m_gpio+10) // clears bits which are 1 ignores bits which are 0
 
 HWAbstraction::HWAbstraction(const char* spiDevice) {
     m_spiDevice = spiDevice;
@@ -58,7 +72,12 @@ int HWAbstraction::openDevice() {
     ret = ioctl(m_fd, SPI_IOC_WR_MODE, &mode);
     ret = ioctl(m_fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
     ret = ioctl(m_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
+    
+    if (!setupIO()) {
+        return -2;
+    }
 
+    
     return 0;
 }
 
@@ -77,7 +96,8 @@ void HWAbstraction::closeDevice() {
 * @return true for success, false otherwise
 */
 bool HWAbstraction::setCE() {
-
+    GPIO_SET = 1 << 25;
+    return true;
 }
 
 
@@ -87,7 +107,8 @@ bool HWAbstraction::setCE() {
 * @return true for success, false otherwise
 */
 bool HWAbstraction::clearCE() {
-
+    GPIO_CLR = 1 << 25;
+    return true;
 }
 
 /**
@@ -121,4 +142,37 @@ bool HWAbstraction::transact(const uint8_t* tx, uint8_t* rx, int n) {
 
     return true;
 }
+
+bool HWAbstraction::setupIO() {
+    int memFd;
+    /* open /dev/mem */
+    if ((memFd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0) {
+        printf("can't open /dev/mem \n");
+        return false;
+    }
+
+    /* mmap GPIO */
+    m_gpioMap = mmap(
+            NULL,             //Any adddress in our space will do
+            BLOCK_SIZE,       //Map length
+            PROT_READ|PROT_WRITE,// Enable reading & writting to mapped memory
+            MAP_SHARED,       //Shared with other processes
+            memFd,           //File to map
+            GPIO_BASE         //Offset to GPIO peripheral
+            );
+
+    close(memFd); //No need to keep mem_fd open after mmap
+
+    if (m_gpioMap == MAP_FAILED) {
+        printf("mmap error %p\n", m_gpioMap);//errno also set!
+        return false;
+    }
+
+    // Always use volatile pointer!
+    m_gpio = (volatile unsigned *)m_gpioMap;
+    INP_GPIO(25);
+    OUT_GPIO(25);
+
+    return true;
+} // setup_io
 
