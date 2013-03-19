@@ -446,6 +446,7 @@ bool NRFController::setMode(NRFMode mode) {
 
         case NRFRxMode:
             regConfig = regConfig | 0x01;
+            m_device->setCE();
             break;
 
         default:
