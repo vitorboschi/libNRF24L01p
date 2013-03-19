@@ -89,7 +89,7 @@ class NRFController {
     int readData(int size, char* buffer);
     int writeData(int size, const char* buffer);
     bool sendPkg(const char* data);
-    int bytesAvailable();
+    bool dataAvailable();
     bool setPowerUp(bool powerUp);
     bool setMode(NRFMode mode);
     private:

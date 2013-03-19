@@ -380,9 +380,17 @@ bool NRFController::sendPkg(const char* data) {
 * @brief retrieve the number of bytes available for reading
 * this method takes in account the size of the internal buffer, plus the module's buffer
 *
-* @return bytes available for reading
+* @return true if there's anything to be read, false otherwise
 */
-int NRFController::bytesAvailable() {
+bool NRFController::dataAvailable() {
+    uint8_t tx;
+    uint8_t rx;
+
+    tx = NRF_NOP;
+    m_device->transact(&tx, &rx, 1);
+    if (rx & 0x40) {
+        return 1;
+    }
     return 0;
 }
 
