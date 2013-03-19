@@ -84,7 +84,7 @@ class NRFController {
     bool setAutoAck(bool autoAck, uint8_t pipe = 0);
     bool setAddressWidth(int width);
     uint8_t addressWidth();
-    bool setRxAddress(const uint8_t* address, uint8_t n, uint8_t pipe = 0);
+    bool setRxAddress(uint64_t address, uint8_t n, uint8_t pipe = 0);
     bool setChannel(int channel);
     int readData(int size, char* buffer);
     int writeData(int size, const char* buffer);

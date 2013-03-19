@@ -301,18 +301,25 @@ uint8_t NRFController::addressWidth() {
 * @brief Set the address used for a RX pipe
 * Address width must be set to n bytes before setting the actual address
 *
-* @param address array of bytes containing the address
-* @param n size of the array address
+* @param address address for the pipe.
+* @param n number of bytes to use for addressing
 * @param pipe which pipe to set the address. Pipes 0 and 1 will use the complete address, but other pipes will only set LSB. Other bytes will be mirrored from pipe 1 address
 *
 * @return true for success, false otherwise
 */
-bool NRFController::setRxAddress(const uint8_t* address, uint8_t n, uint8_t pipe) {
+bool NRFController::setRxAddress(uint64_t address, uint8_t n, uint8_t pipe) {
+    uint8_t buffer[5];
+
     if (!setAddressWidth(n)) {
         return false;
     }
-    
-    writeRegister(NRF_REG_RX_ADDR_P0 + pipe, address, n);
+
+    for (int i=0;i<n;i++) {
+        buffer[i] = address & 0xFF;
+        address >>=8;
+    }
+
+    writeRegister(NRF_REG_RX_ADDR_P0 + pipe, buffer, n);
     return true;
 }
 
