@@ -348,11 +348,10 @@ bool NRFController::setChannel(int channel) {
 }
 
 /**
-* @brief read data from internal buffer.
-* Always check and retrieve data from RF module, if it's available. Note: this
-* method will not block in case data is not available. It'll just return 0
+* @brief read a packet from the NRF module
+* this method will not block in case data is not available. It'll just return 0
 *
-* @param buffer pre-allocated buffer where data will be written
+* @param buffer pre-allocated buffer where data will be written. It must be able to hold a complete package, as set by setPacketSize()]
 *
 * @return how many bytes were effectively read
 */
@@ -400,8 +399,7 @@ bool NRFController::sendPkg(const char* data) {
 }
 
 /**
-* @brief retrieve the number of bytes available for reading
-* this method takes in account the size of the internal buffer, plus the module's buffer
+* @brief check if there are any package available for reading
 *
 * @return true if there's anything to be read, false otherwise
 */
