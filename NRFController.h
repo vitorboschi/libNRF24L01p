@@ -27,7 +27,7 @@
 
 #define NRF_R_REGISTER 0x00
 #define NRF_W_REGISTER 0x20
-#define NRF_R_RX_PAYLOAD 0x60
+#define NRF_R_RX_PAYLOAD 0x61
 #define NRF_W_TX_PAYLOAD 0xA0
 #define NRF_FLUSH_TX 0xE1
 #define NRF_FLUXH_RX 0xE2
