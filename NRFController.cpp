@@ -121,6 +121,8 @@ bool NRFController::setPacketSize(uint8_t packetSize, uint8_t pipe) {
     regRxPw |= packetSize;
 
     writeRegister(NRF_REG_RX_PW_P0 + pipe, &packetSize, 1);
+
+    m_packetSize = packetSize;
     return true;
 }
 
@@ -350,13 +352,27 @@ bool NRFController::setChannel(int channel) {
 * Always check and retrieve data from RF module, if it's available. Note: this
 * method will not block in case data is not available. It'll just return 0
 *
-* @param size how many bytes to read
 * @param buffer pre-allocated buffer where data will be written
 *
 * @return how many bytes were effectively read
 */
-int NRFController::readData(int size, char* buffer) {
-    return 0;
+int NRFController::readData(uint8_t* buffer) {
+    uint8_t tx[m_packetSize+1];
+    uint8_t rx[m_packetSize+1];
+
+    if (!dataAvailable()) {
+        return 0;
+    }
+
+    tx[0] = NRF_R_RX_PAYLOAD;
+    m_device->transact(tx, rx, m_packetSize+1);
+
+    for (int i=0;i<m_packetSize;i++) {
+        buffer[i] = rx[i+1];
+    }
+
+    //TODO clear interrupt bit
+    return m_packetSize;
 }
 
 /**
@@ -390,12 +406,10 @@ bool NRFController::sendPkg(const char* data) {
 * @return true if there's anything to be read, false otherwise
 */
 bool NRFController::dataAvailable() {
-    uint8_t tx;
-    uint8_t rx;
-
-    tx = NRF_NOP;
-    m_device->transact(&tx, &rx, 1);
-    if (rx & 0x40) {
+    uint8_t regFifoStatus;
+    
+    readRegister(NRF_REG_FIFO_STATUS, &regFifoStatus);
+    if (!(regFifoStatus & 0x01)) {
         return 1;
     }
     return 0;

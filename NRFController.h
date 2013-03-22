@@ -86,7 +86,7 @@ class NRFController {
     uint8_t addressWidth();
     bool setRxAddress(uint64_t address, uint8_t n, uint8_t pipe = 0);
     bool setChannel(int channel);
-    int readData(int size, char* buffer);
+    int readData(uint8_t* buffer);
     int writeData(int size, const char* buffer);
     bool sendPkg(const char* data);
     bool dataAvailable();
@@ -96,6 +96,7 @@ class NRFController {
     bool readRegister(uint8_t regNumber, uint8_t regBuffer[], int size = 1);
     bool writeRegister(uint8_t regNumber, const uint8_t regValue[], int size = 1);
 
+    uint8_t m_packetSize;
     HWAbstraction* m_device;
 };
 
